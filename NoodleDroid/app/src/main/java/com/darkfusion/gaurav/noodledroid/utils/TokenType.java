@@ -1,0 +1,15 @@
+package com.darkfusion.gaurav.noodledroid.utils;
+
+public enum TokenType {
+    TYPE_EOF,
+    TYPE_MOUSE_MOVE,
+    TYPE_MOUSE_DRAG,
+    TYPE_MOUSE_LEFT_BUTTON_CLICK,
+    TYPE_DELIMITER,
+    TYPE_NONE,
+    TYPE_MOUSE_LEFT_BUTTON_DOWN,
+    TYPE_MOUSE_LEFT_BUTTON_UP,
+    TYPE_MOUSE_RIGHT_BUTTON_DOWN,
+    TYPE_MOUSE_RIGHT_BUTTON_UP,
+    COORDINATE
+}

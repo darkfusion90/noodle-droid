@@ -1,0 +1,7 @@
+package com.darkfusion.gaurav.noodledroid;
+
+import android.arch.lifecycle.ViewModel;
+
+class HomeViewModel extends ViewModel {
+    // TODO: Implement the ViewModel
+}

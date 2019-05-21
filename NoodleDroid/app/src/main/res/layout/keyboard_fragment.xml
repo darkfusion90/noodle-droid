@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".KeyboardFragment">
+
+    <ScrollView
+        style="@android:style/Widget.DeviceDefault.ScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="12dp"
+        tools:layout_editor_absoluteY="240dp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/rightAltWinMenuCtrl"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/guideline16"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/functionSetOne">
+
+                <ToggleButton
+                    android:id="@+id/altButton"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/altButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/altButton"
+                    android:textOn="@string/altButton" />
+
+
+                <ToggleButton
+                    android:id="@+id/windowsKey"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/windowsButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/windowsButton"
+                    android:textOn="@string/windowsButton" />
+
+                <Button
+                    android:id="@+id/menuButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/menuButton"
+                    android:textColor="@android:color/white"
+                    tools:layout_editor_absoluteX="311dp"
+                    tools:layout_editor_absoluteY="197dp" />
+
+                <ToggleButton
+                    android:id="@+id/ctrlButton"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/ctrlButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/ctrlButton"
+                    android:textOn="@string/ctrlButton" />
+
+                <ToggleButton
+                    android:id="@+id/shiftButton"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:layout_weight="0"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/shiftButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/shiftButton"
+                    android:textOn="@string/shiftButton" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/escapeButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="48dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/escapeButton"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toTopOf="@+id/guideline21"
+                app:layout_constraintEnd_toStartOf="@+id/homePrintScrEnd"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/homePrintScrEnd"
+                android:layout_width="245dp"
+                android:layout_height="38dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/guideline21"
+                app:layout_constraintEnd_toStartOf="@+id/guideline19"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Button
+                    android:id="@+id/homeButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/homeButton"
+                    android:textColor="@android:color/white"
+                    tools:layout_editor_absoluteX="67dp"
+                    tools:layout_editor_absoluteY="4dp" />
+
+                <Button
+                    android:id="@+id/printScreenButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_marginTop="0dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/printScreenButton"
+                    android:textColor="@android:color/white"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:layout_editor_absoluteX="142dp" />
+
+                <Button
+                    android:id="@+id/endButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="38dp"
+                    android:layout_weight="1"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/endButton"
+                    android:textColor="@android:color/white"
+                    tools:layout_editor_absoluteX="246dp"
+                    tools:layout_editor_absoluteY="4dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/numScrollCaps"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="0"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@+id/guideline21"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline19"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ToggleButton
+                    android:id="@+id/numLockButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/numLockButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/numLockButton"
+                    android:textOn="@string/numLockButton" />
+
+                <ToggleButton
+                    android:id="@+id/scrollLockButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="95dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/scrollLockButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/scrollLockButton"
+                    android:textOn="@string/scrollLockButton" />
+
+                <ToggleButton
+                    android:id="@+id/capsLockButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="90dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorPrimaryDark"
+                    android:text="@string/capsLockButton"
+                    android:textColor="@android:color/white"
+                    android:textOff="@string/capsLockButton"
+                    android:textOn="@string/capsLockButton" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/functionSetOne"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toStartOf="@+id/functionSetTwo"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline21">
+
+                <Button
+                    android:id="@+id/functionKey_1"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_1"
+                    android:textColor="@android:color/white" />
+
+
+                <Button
+                    android:id="@+id/functionKey_2"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_2"
+                    android:textColor="@android:color/white" />
+
+
+                <Button
+                    android:id="@+id/functionKey_3"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_3"
+                    android:textColor="@android:color/white" />
+
+
+                <Button
+                    android:id="@+id/functionKey_4"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_4"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/functionSetTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toStartOf="@+id/functionSetThree"
+                app:layout_constraintTop_toTopOf="@+id/guideline21">
+
+                <Button
+                    android:id="@+id/functionKey_5"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_5"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/functionKey_6"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_6"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/functionKey_7"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_7"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/functionKey_8"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_8"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/functionSetThree"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:background="@color/colorPrimaryDark"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline21">
+
+                <Button
+                    android:id="@+id/functionKey_9"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_9"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/functionKey_10"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_10"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/functionKey_11"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_11"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/functionKey_12"
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="48dp"
+                    android:layout_height="38dp"
+                    android:text="@string/functionKey_12"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/keyboardEditText"
+                android:layout_width="600dp"
+                android:layout_height="45dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="136dp"
+                android:ems="10"
+                android:hint="@string/keyboardEditTextHint"
+                android:imeOptions="flagNoExtractUi"
+                android:inputType="textPersonName"
+                android:textColorHint="?attr/colorControlNormal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline18"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="175dp" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline19"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="310dp" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline21"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="48dp" />
+
+            <Button
+                android:id="@+id/enterButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="100dp"
+                android:layout_height="38dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="1dp"
+                android:background="@color/colorPrimaryDark"
+                android:text="@string/enterButton"
+                android:textColor="@android:color/white"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toTopOf="@+id/guideline16"
+                app:layout_constraintStart_toEndOf="@+id/rightAltWinMenuCtrl"
+                app:layout_constraintTop_toBottomOf="@+id/functionSetTwo"
+                app:layout_constraintVertical_bias="0.421" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="154dp" />
+
+        </android.support.constraint.ConstraintLayout>
+
+    </ScrollView>
+
+</FrameLayout>
