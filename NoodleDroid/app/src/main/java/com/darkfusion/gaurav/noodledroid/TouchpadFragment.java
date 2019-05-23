@@ -1,37 +1,28 @@
 package com.darkfusion.gaurav.noodledroid;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.graphics.PointF;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.darkfusion.gaurav.noodledroid.utils.Coordinate;
 import com.darkfusion.gaurav.noodledroid.utils.SingleToast;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static android.app.Activity.DEFAULT_KEYS_SEARCH_GLOBAL;
-import static com.darkfusion.gaurav.noodledroid.MainActivity.communicationHandler;
 
 public class TouchpadFragment extends Fragment implements View.OnTouchListener {
     static final int SCREEN_TOUCH_EVENT = 10;
@@ -42,23 +33,19 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
     static final int SCREEN_TAP = 60;
     static final int MAX_CLICK_DURATION = 200;
     static final int MAX_ACTIVE_POINTERS_ALLOWED = 2;
+    static final double MIN_MOVE_DISTANCE = 0.5;
     static final int BUTTON_STATE_ACTIVE = 7;
     static final int BUTTON_STATE_INACTIVE = 8;
 
-    private TouchpadViewModel mViewModel;
-
-    private static Coordinate currentTouchCoordinate;
-    private static Coordinate previousTouchCoordinate;
-
     static boolean isConnectedToServer;
     public static boolean isLeftButtonPressed;
+    private static Coordinate currentTouchCoordinate;
+    private static Coordinate previousTouchCoordinate;
 
     FrameLayout touchScreen;
     int activePointerIndex;
     int activePointerId;
-
-    Map<Integer, PointF> activePointers;
-
+    SparseArray<PointF> activePointers;
 
     public static TouchpadFragment newInstance() {
         return new TouchpadFragment();
@@ -73,37 +60,20 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        activePointers = new HashMap<>();
-
+        activePointers = new SparseArray<>();
         View rootView = getView();
 
         if (rootView == null) {
-            Toast.makeText(getContext(), "Unexpected error occured while loading TouchPad", Toast.LENGTH_LONG).show();
-            super.onViewCreated(view, savedInstanceState);
+            SingleToast.show(getContext(), "Unexpected error occurred while loading TouchPad", Toast.LENGTH_LONG);
+            onDestroy();
             return;
         }
 
-        Button leftButton = rootView.findViewById(R.id.touchpadLeftButton);
-        leftButton.setOnTouchListener(this);
-
-        Button rightButton = rootView.findViewById(R.id.touchpadRightButton);
-        rightButton.setOnTouchListener(this);
-
-        currentTouchCoordinate = new Coordinate(0, 0);
-        previousTouchCoordinate = new Coordinate(0, 0);
+        addButtonEventListeners(rootView);
+        initializeTouchCoordinates();
+        addTouchListenerToScreen(rootView);
 
         isConnectedToServer = isLeftButtonPressed = false;
-
-        touchScreen = rootView.findViewById(R.id.touchpadScreen);
-        touchScreen.setOnTouchListener(this);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(TouchpadViewModel.class);
-        // TODO: Use the ViewModel
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -123,11 +93,11 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
         return false;
     }
 
-    static class CommunicationAsyncTask extends AsyncTask<Integer, Void, Boolean> {
+    static class TouchpadCommunicationAsyncTask extends AsyncTask<Integer, Void, Boolean> {
         MotionEvent event;
         WeakReference<Context> contextWeakReference;
 
-        private CommunicationAsyncTask(Context context) {
+        private TouchpadCommunicationAsyncTask(Context context) {
             this.contextWeakReference = new WeakReference<>(context);
         }
 
@@ -151,55 +121,47 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
 
         @Override
         protected void onPostExecute(Boolean taskSuccessful) {
-            //if (!taskSuccessful) {
-            //  showServerDisconnectedToast();
-            //}
+            if (!taskSuccessful) {
+                showServerDisconnectedToast();
+            }
 
             super.onPostExecute(taskSuccessful);
         }
 
-        private void showServerDisconnectedToast() {
-            Context context = contextWeakReference.get().getApplicationContext();
-            SingleToast.show(contextWeakReference.get().getApplicationContext(),
-                    context.getResources().getString(R.string.serverDisconnected),
-                    Toast.LENGTH_LONG);
-        }
-
         private boolean sendScreenTouchMessage(int messageType) {
-            if (communicationHandler == null) {
-                communicationHandler = new CommunicationHandler(1);
-                //return false;
+            if (MainActivity.communicationHandler == null) {
+                return false;
             }
 
             switch (messageType) {
                 case MOUSE_MOVE:
-                    communicationHandler.sendMouseMove(calculateRelativeCoordinate());
+                    MainActivity.communicationHandler.sendMouseMove(calculateRelativeCoordinate());
                     break;
                 case SCREEN_TAP:
-                    communicationHandler.sendMouseClick();
+                    MainActivity.communicationHandler.sendMouseClick();
                     break;
             }
             return true;
         }
 
         private boolean sendButtonEventMessage(int buttonType) {
-            if (communicationHandler == null) {
+            if (MainActivity.communicationHandler == null) {
                 return false;
             }
 
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (buttonType == LEFT_BUTTON) {
-                        communicationHandler.sendLeftButtonDown();
+                        MainActivity.communicationHandler.sendLeftButtonDown();
                     } else {
-                        communicationHandler.sendRightButtonDown();
+                        MainActivity.communicationHandler.sendRightButtonDown();
                     }
                     break;
                 case MotionEvent.ACTION_UP:
                     if (buttonType == LEFT_BUTTON) {
-                        communicationHandler.sendLeftButtonUp();
+                        MainActivity.communicationHandler.sendLeftButtonUp();
                     } else {
-                        communicationHandler.sendRightButtonUp();
+                        MainActivity.communicationHandler.sendRightButtonUp();
                     }
                     break;
             }
@@ -210,33 +172,72 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
         private Coordinate calculateRelativeCoordinate() {
             return currentTouchCoordinate.subtract(previousTouchCoordinate);
         }
+
+        private void showServerDisconnectedToast() {
+            Context context = contextWeakReference.get().getApplicationContext();
+            SingleToast.show(context,
+                    context.getResources().getString(R.string.serverDisconnected),
+                    Toast.LENGTH_LONG);
+        }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void addButtonEventListeners(View rootView) {
+        Button leftButton = rootView.findViewById(R.id.touchpadLeftButton);
+        leftButton.setOnTouchListener(this);
+
+        Button rightButton = rootView.findViewById(R.id.touchpadRightButton);
+        rightButton.setOnTouchListener(this);
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void addTouchListenerToScreen(View rootView) {
+        touchScreen = rootView.findViewById(R.id.touchpadScreen);
+        touchScreen.setOnTouchListener(this);
+    }
+
+    private void initializeTouchCoordinates() {
+        currentTouchCoordinate = new Coordinate(0, 0);
+        previousTouchCoordinate = new Coordinate(0, 0);
+    }
+
+    private void sendMouseMoveMessage(MotionEvent event) {
+        if (isValidMouseMoveEvent(event)) {
+            TouchpadCommunicationAsyncTask communicationAsyncTask = new TouchpadCommunicationAsyncTask(getContext());
+            communicationAsyncTask.setEvent(event);
+            communicationAsyncTask.execute(SCREEN_TOUCH_EVENT, MOUSE_MOVE);
+        }
+    }
+
+    private void sendMouseClickMessage(MotionEvent event) {
+        if (isValidActionUpEvent(event)) {
+            TouchpadCommunicationAsyncTask communicationAsyncTask = new TouchpadCommunicationAsyncTask(getContext());
+            communicationAsyncTask.setEvent(event);
+            communicationAsyncTask.execute(SCREEN_TOUCH_EVENT, SCREEN_TAP);
+        }
     }
 
     private void handleScreenOnTouch(MotionEvent event) {
-        updateTouchCoordinates((int) event.getX(), (int) event.getY());
+        final int X = (int) event.getRawX();
+        final int Y = (int) event.getRawY();
 
-        CommunicationAsyncTask task = new CommunicationAsyncTask(getContext());
-        task.setEvent(event);
-
-        switch (event.getActionMasked()) {
-            //A screen tap event
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                currentTouchCoordinate.setCoordinate(X, Y);
+                previousTouchCoordinate.setCoordinate(X, Y);
+                break;
             case MotionEvent.ACTION_UP:
-                if (isValidActionUpEvent(event)) {
-                    Log.d("KIRAN", "ACTION_UP");
-                    task.execute(SCREEN_TOUCH_EVENT, SCREEN_TAP);
-                }
+                sendMouseClickMessage(event);
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (isValidActionMoveEvent(event)) {
-                    Log.d("KIRAN", "ACTION_MOVE");
-                    task.execute(SCREEN_TOUCH_EVENT, MOUSE_MOVE);
-                }
+                updateTouchCoordinates(X, Y);
+                sendMouseMoveMessage(event);
                 break;
         }
     }
 
     private void handleLeftButtonOnTouch(MotionEvent event, Button button) {
-        CommunicationAsyncTask task = new CommunicationAsyncTask(getContext());
+        TouchpadCommunicationAsyncTask task = new TouchpadCommunicationAsyncTask(getContext());
         task.setEvent(event);
 
         int actionIndex = event.getActionIndex();
@@ -254,11 +255,8 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
                     if (point == null) {
                         continue;
                     }
-
-                    int x = (int) event.getX(i);
-                    int y = (int) event.getY(i);
-                    updateTouchCoordinates(x, y);
-                    task.execute(SCREEN_TOUCH_EVENT, MOUSE_MOVE);
+                    updateTouchCoordinates((int) event.getX(i), (int) event.getY(i));
+                    sendMouseMoveMessage(event);
                 }
                 break;
 
@@ -274,8 +272,12 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
                 task.execute(BUTTON_EVENT, LEFT_BUTTON);
                 break;
 
-
             case MotionEvent.ACTION_POINTER_DOWN:
+                final int X = (int) event.getX(1);
+                final int Y = (int) event.getY(1);
+                currentTouchCoordinate.setCoordinate(X, Y);
+                previousTouchCoordinate.setCoordinate(X, Y);
+
                 PointF eventPoinst = new PointF(event.getX(actionIndex), event.getY(actionIndex));
                 activePointers.put(actionId, eventPoinst);
                 break;
@@ -291,7 +293,7 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
     }
 
     private void handleRightButtonOnTouch(MotionEvent event, Button button) {
-        CommunicationAsyncTask task = new CommunicationAsyncTask(getContext());
+        TouchpadCommunicationAsyncTask task = new TouchpadCommunicationAsyncTask(getContext());
         task.setEvent(event);
 
         switch (event.getAction()) {
@@ -316,18 +318,19 @@ public class TouchpadFragment extends Fragment implements View.OnTouchListener {
         }
     }
 
-    private boolean isValidActionMoveEvent(MotionEvent event) {
-        int moveDistance = currentTouchCoordinate.eulerDistance(previousTouchCoordinate);
+    private boolean isValidMouseMoveEvent(MotionEvent event) {
+        double moveDistance = currentTouchCoordinate.eulerDistance(previousTouchCoordinate);
         long moveDuration = event.getEventTime() - event.getDownTime();
+        System.out.println("DISTANCE: " + moveDistance + " DURATION: " + moveDuration);
 
-        return (moveDuration > MAX_CLICK_DURATION) && (moveDistance > 2);
+        return (moveDuration > MAX_CLICK_DURATION) && (moveDistance >= MIN_MOVE_DISTANCE);
     }
 
     private boolean isValidActionUpEvent(MotionEvent event) {
-        int moveDistance = currentTouchCoordinate.eulerDistance(previousTouchCoordinate);
+        double moveDistance = currentTouchCoordinate.eulerDistance(previousTouchCoordinate);
 
         long clickDuration = event.getEventTime() - event.getDownTime();
-        return (clickDuration <= MAX_CLICK_DURATION) && (moveDistance < 2);
+        return (clickDuration <= MAX_CLICK_DURATION) && (moveDistance < MIN_MOVE_DISTANCE);
     }
 
     static void updateTouchCoordinates(int newX, int newY) {

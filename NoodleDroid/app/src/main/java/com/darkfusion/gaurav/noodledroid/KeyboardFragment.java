@@ -1,6 +1,5 @@
 package com.darkfusion.gaurav.noodledroid;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -9,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,41 +23,38 @@ import com.darkfusion.gaurav.noodledroid.utils.SingleToast;
 
 import java.lang.ref.WeakReference;
 
-import static com.darkfusion.gaurav.noodledroid.MainActivity.communicationHandler;
-
 public class KeyboardFragment extends Fragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     static final Character BACKSPACE = '\b';
 
-    Button escapeButton;
-    Button homeButton;
-    Button printScreenButton;
-    Button endButton;
-    ToggleButton numLockButton;
-    ToggleButton capsLockButton;
-    ToggleButton scrollLockButton;
+    private Button escapeButton;
+    private Button homeButton;
+    private Button printScreenButton;
+    private Button endButton;
+    private ToggleButton numLockButton;
+    private ToggleButton capsLockButton;
+    private ToggleButton scrollLockButton;
 
-    Button functionKeyOne;
-    Button functionKeyTwo;
-    Button functionKeyThree;
-    Button functionKeyFour;
-    Button functionKeyFive;
-    Button functionKeySix;
-    Button functionKeySeven;
-    Button functionKeyEight;
-    Button functionKeyNine;
-    Button functionKeyTen;
-    Button functionKeyEleven;
-    Button functionKeyTwelve;
+    private Button functionKeyOne;
+    private Button functionKeyTwo;
+    private Button functionKeyThree;
+    private Button functionKeyFour;
+    private Button functionKeyFive;
+    private Button functionKeySix;
+    private Button functionKeySeven;
+    private Button functionKeyEight;
+    private Button functionKeyNine;
+    private Button functionKeyTen;
+    private Button functionKeyEleven;
+    private Button functionKeyTwelve;
 
-    ToggleButton controlButton;
-    ToggleButton altButton;
-    ToggleButton shiftButton;
-    ToggleButton windowsButton;
-    Button menuButton;
-    Button enterButton;
+    private ToggleButton controlButton;
+    private ToggleButton altButton;
+    private ToggleButton shiftButton;
+    private ToggleButton windowsButton;
+    private Button menuButton;
+    private Button enterButton;
 
-    EditText editText;
     private TextWatcher textWatcher = new TextWatcher() {
         CharSequence previousText = "";
 
@@ -70,14 +65,16 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            CommunicationAsyncTask communicationAsyncTask = new CommunicationAsyncTask(getContext());
-
+            KeyboardCommunicationAsyncTask communicationAsyncTask = new KeyboardCommunicationAsyncTask(getContext());
             char ch = getTypedCharacter(s, previousText);
+
+            //Sends backspace instruction to keyboard
             if (ch == BACKSPACE) {
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_DEL));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_DEL));
                 return;
             }
-            Log.d(MainActivity.LOG_TAG, "Watcher OnTextChanged: " + ch);
+
+            //If not backspace, transmit the character as is
             communicationAsyncTask.execute(String.valueOf(ch));
         }
 
@@ -86,13 +83,38 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
             previousText = s.toString();
         }
 
+        //#region Doesn't collapse automatically since it is in anonymous class. Hence adding manual "region"
+
+        /**
+         * Uses the current text and previously recorded text of the EditText
+         * to determine the typed character.
+         *
+         * Scenario one: Current text is longer than the previous one.
+         *               The typed character is present in the index
+         *               which is equal to the length of previous text.
+         *      Example: Current: "WORLD"
+         *               Previous: "WORL"
+         *               Length of previous: 4
+         *               Typed Character: Current.charAt(4) (i.e., 'D')
+         *
+         * Scenario two: Current text is shorter than previous text
+         *               Its obvious that a BACKSPACE had been "typed"
+         *               since it reduced the length of the current text
+         *               making it shorter than previous
+         *      Example: Current: "WORL"
+         *               Previous: "WORLD"
+         *               Current is shorter than previous, hence BACKSPACE
+         *
+         * @param currentText The current text in the view EditText
+         * @param previousText The previously recorded text in the view EditText
+         * @return The character that was typed
+         */
+        //#endregion
         char getTypedCharacter(CharSequence currentText, CharSequence previousText) {
             int currentTextLength = currentText.length();
             int prevTextLength = previousText.length();
-            Log.d("#darkfusion#", "PREV: " + previousText + " (n = " + prevTextLength + ")" + "\t\tCURRENT: " + currentText + " (n = " + currentTextLength + ")");
 
             if (currentTextLength >= prevTextLength) {
-                Log.d("#darkfusion#", "MORE THAN: " + currentText.charAt(prevTextLength));
                 return currentText.charAt(prevTextLength);
             } else {
                 return BACKSPACE;
@@ -100,10 +122,7 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
         }
     };
 
-    private KeyboardViewModel mViewModel;
-
     public static KeyboardFragment newInstance() {
-        System.out.println("YAY NEW INSTANCE BEING CREATED!");
         return new KeyboardFragment();
     }
 
@@ -124,19 +143,11 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        System.out.println("YAY ACTIVITY BEING CREATED!");
-        mViewModel = ViewModelProviders.of(this).get(KeyboardViewModel.class);
-        // TODO: Use the ViewModel
-    }
-
-    @Override
     public void onClick(View v) {
-        CommunicationAsyncTask communicationAsyncTask = new CommunicationAsyncTask(getContext());
+        KeyboardCommunicationAsyncTask communicationAsyncTask = new KeyboardCommunicationAsyncTask(getContext());
         switch (v.getId()) {
             case R.id.escapeButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_ESCAPE));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_ESCAPE));
                 break;
 
             case R.id.homeButton:
@@ -152,75 +163,75 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
                 break;
 
             case R.id.numLockButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_NUM_LOCK));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_NUM_LOCK));
                 break;
 
             case R.id.capsLockButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_CAPS_LOCK));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_CAPS_LOCK));
                 break;
 
             case R.id.scrollLockButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_SCROLL_LOCK));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_SCROLL_LOCK));
                 break;
 
             case R.id.functionKey_1:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F1));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F1));
                 break;
 
             case R.id.functionKey_2:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F2));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F2));
                 break;
 
             case R.id.functionKey_3:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F3));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F3));
                 break;
 
             case R.id.functionKey_4:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F4));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F4));
                 break;
 
             case R.id.functionKey_5:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F5));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F5));
                 break;
 
             case R.id.functionKey_6:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F6));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F6));
                 break;
 
             case R.id.functionKey_7:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F7));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F7));
                 break;
 
             case R.id.functionKey_8:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F8));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F8));
                 break;
 
             case R.id.functionKey_9:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F9));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F9));
                 break;
 
             case R.id.functionKey_10:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F10));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F10));
                 break;
 
             case R.id.functionKey_11:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F11));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F11));
                 break;
 
             case R.id.functionKey_12:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_F12));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_F12));
                 break;
 
             case R.id.ctrlButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_CTRL_RIGHT));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_CTRL_LEFT));
                 break;
 
             case R.id.altButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_ALT_RIGHT));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_ALT_LEFT));
                 break;
 
             case R.id.shiftButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_SHIFT_RIGHT));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_SHIFT_LEFT));
                 break;
 
             case R.id.windowsKey:
@@ -228,10 +239,10 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
                 break;
 
             case R.id.menuButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_MENU));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_MENU));
                 break;
             case R.id.enterButton:
-                communicationAsyncTask.execute(KeyEvent.keyCodeToString(KeyEvent.KEYCODE_ENTER));
+                communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(KeyEvent.KEYCODE_ENTER));
                 break;
         }
     }
@@ -245,6 +256,39 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
         }
     }
 
+    static class KeyboardCommunicationAsyncTask extends AsyncTask<String, Void, Boolean> {
+        WeakReference<Context> contextWeakReference;
+
+        KeyboardCommunicationAsyncTask(Context context) {
+            this.contextWeakReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... keyStrokes) {
+            if (MainActivity.communicationHandler == null) {
+                return false;
+            }
+            MainActivity.communicationHandler.sendKeyStroke(keyStrokes);
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean taskSuccessful) {
+            if (!taskSuccessful) {
+                showServerDisconnectedToast();
+            }
+
+            super.onPostExecute(taskSuccessful);
+        }
+
+        private void showServerDisconnectedToast() {
+            Context context = contextWeakReference.get().getApplicationContext();
+            SingleToast.show(context,
+                    context.getResources().getString(R.string.serverDisconnected),
+                    Toast.LENGTH_LONG);
+        }
+    }
+
     /**
      * Called from the onKeyDown() from the class MainActivity (overrides from AppCompatActivity)
      * Handles keyDown events (Mostly the backspace key in the soft keyboard)
@@ -253,43 +297,14 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
      * @param context the context of the event
      */
     static void customOnKeyDown(int keyCode, Context context) {
-        CommunicationAsyncTask communicationAsyncTask = new CommunicationAsyncTask(context);
-        communicationAsyncTask.execute(KeyEvent.keyCodeToString(keyCode));
-    }
-
-    static class CommunicationAsyncTask extends AsyncTask<String, Void, Boolean> {
-        WeakReference<Context> contextWeakReference;
-
-        CommunicationAsyncTask(Context context) {
-            this.contextWeakReference = new WeakReference<>(context);
-        }
-
-        @Override
-        protected Boolean doInBackground(String... keyStrokes) {
-            if (communicationHandler == null) {
-                return false;
-            }
-            communicationHandler.sendKeyStroke(keyStrokes);
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean taskSuccessful) {
-            if (!taskSuccessful) {
-                Context context = contextWeakReference.get().getApplicationContext();
-                SingleToast.show(context,
-                        context.getResources().getString(R.string.serverDisconnected),
-                        Toast.LENGTH_LONG);
-            }
-
-            super.onPostExecute(taskSuccessful);
-        }
+        KeyboardCommunicationAsyncTask communicationAsyncTask = new KeyboardCommunicationAsyncTask(context);
+        communicationAsyncTask.execute(CustomKeyEvent.keyCodeToString(keyCode));
     }
 
     void fetchAllButtonsFromLayout() {
         View rootView = getView();
         if (rootView == null) {
-            Toast.makeText(getContext(), "Error launching the keyboard", Toast.LENGTH_LONG).show();
+            SingleToast.show(getContext(), "Error launching the keyboard", Toast.LENGTH_LONG);
             return;
         }
 
@@ -369,7 +384,7 @@ public class KeyboardFragment extends Fragment implements View.OnClickListener, 
             return;
         }
 
-        editText = view.findViewById(R.id.keyboardEditText);
+        EditText editText = view.findViewById(R.id.keyboardEditText);
         editText.addTextChangedListener(textWatcher);
     }
 }

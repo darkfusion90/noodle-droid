@@ -1,5 +1,6 @@
 package com.darkfusion.gaurav.noodledroid;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.widget.Toast;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -121,6 +123,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
+        
         /*This method is to be used only for the keyboard fragment
          *  to handle key events like BACK button in the soft keyboard
          * */
@@ -192,4 +195,5 @@ public class MainActivity extends AppCompatActivity
     private static boolean isValidIpAddress(String ipAddress) {
         return true;
     }
+
 }

@@ -31,15 +31,6 @@ public class Tokenizer {
         this.tokens.add(Token.getToken(TokenType.TYPE_DELIMITER));
     }
 
-    private void addMouseLeftButtonStatus() {
-        if (TouchpadFragment.isLeftButtonPressed) {
-            this.tokens.add(Token.getToken(TokenType.TYPE_MOUSE_LEFT_BUTTON_DOWN));
-        } else {
-            this.tokens.add(Token.getToken(TokenType.TYPE_MOUSE_LEFT_BUTTON_UP));
-        }
-        this.tokens.add(Token.getToken(TokenType.TYPE_DELIMITER));
-    }
-
     private void addCoordinates(String x, String y) {
         this.tokens.add(Token.getCoordinateToken(x));
         this.tokens.add(Token.getToken(TokenType.TYPE_DELIMITER));
@@ -50,19 +41,16 @@ public class Tokenizer {
         if (coordinate == null) {
             coordinate = new Coordinate(0, 0);
         }
-        String x = formatDecimal(coordinate.x);
-        String y = formatDecimal(coordinate.y);
 
         this.tokens.clear();
-
         this.tokens.add(Token.getToken(DeviceType.MOUSE));
         addMouseActionToken(mouseActionType);
-        //the left button status determines a valid mouse drag event
-        //If button is pressed, mouse move results in mouse drag in target device
-        //Else mouse move is sent as is to target device
-        addMouseLeftButtonStatus();
+
+        String x = formatDecimal(coordinate.x);
+        String y = formatDecimal(coordinate.y);
         addCoordinates(x, y);
-        Log.d("KIRAN", "MESSAGE: " + this.toString());
+
+        Log.d("DARKFUSION", "MESSAGE: " + this.toString());
     }
 
     public void tokenizeKeyboardEventMessage(String... keys) {
